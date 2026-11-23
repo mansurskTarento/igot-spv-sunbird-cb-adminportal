@@ -4,14 +4,14 @@ import { Observable } from 'rxjs'
 
 const API_END_POINTS = {
   ORG_V1_Search: '/apis/proxies/v8/org/v1/search',
-  CREATE_FRAMEWORK: 'apis/proxies/v8/org/framework/v1/create',
+  CREATE_FRAMEWORK: '/apis/proxies/v8/org/v2/hierarchy/link',
   DOWNLOAD_FILE_LOG: '/apis/proxies/v8/organisation/v1/hierarchy/download/file/',
   DOWNLOAD_FRAMEWORK_TEMPLATE: '/apis/proxies/v8/organisation/v1/hierarchy/download/',
-  BULKUPLOAD_FRAMEWORK: '/apis/proxies/v8/organisation/v1/hierarchy/bulkUpload/',
+  BULKUPLOAD_FRAMEWORK: '/apis/proxies/v8/org/v2/hierarchy/bulk/link/',
   DOWNLOAD_SAMPLE_TEMPLATE: '/apis/proxies/v8/organisation/v1/getMappingFile/sample/',
   ORG_READ: '/apis/proxies/v8/org/v1/read',
   BULKUPLOAD_PROGRESS: '/apis/proxies/v8/organisation/v1/hierarchy/progress/details/bulkUpload/',
-  ACTIVATE_DEACTIVATE_VOLUNTEER:'apis/proxies/v8/org/v1/status/update'
+  ACTIVATE_DEACTIVATE_VOLUNTEER: 'apis/proxies/v8/org/v1/status/update'
 }
 
 @Injectable({
@@ -29,8 +29,8 @@ export class OrgHierarchyService {
 
   createMasterFrameWork(request: any): Observable<any> {
     return this.http.post<any>(
-      `${API_END_POINTS.CREATE_FRAMEWORK}?masterFrameworkName=${request.frameworkName}&orgId=${request.identifier}`,
-      {}
+      `${API_END_POINTS.CREATE_FRAMEWORK}`,
+      request
     )
   }
 

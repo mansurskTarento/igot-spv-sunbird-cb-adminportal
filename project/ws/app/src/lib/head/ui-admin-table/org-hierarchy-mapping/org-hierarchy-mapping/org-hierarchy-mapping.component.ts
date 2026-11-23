@@ -46,12 +46,13 @@ export class OrgHierarchyMappingComponent implements OnInit, AfterViewInit {
       // categoryDisplayName: 'Competency Area',
       // labelName: 'Competency Area',
       enableManageOrganization: true,
-      enableUpdateHierarchy: true,
+      enableUpdateHierarchy: false,
       enabaleRemoveConnection: true,
       enableThreeDot: true,
       showSearch: true,
       addOrgEnabled: true,
-      enableInfoIcon: true
+      enableInfoIcon: true,
+      enableMoveConnection: true,
     }]
   }
 
@@ -232,20 +233,22 @@ export class OrgHierarchyMappingComponent implements OnInit, AfterViewInit {
 
   async createNewHierarchy() {
     const selectedOrg = (this.checkIfStateAdmin()) ? this.orgReadData : this.getOrgDetails()
+
     if (selectedOrg) {
       const requestBody = {
-        frameworkName: `org_hierarchy`,
-        identifier: (this.checkIfStateAdmin()) ? selectedOrg.id : selectedOrg.identifier
+        request: {
+          parentOrgId: (this.checkIfStateAdmin()) ? selectedOrg.id : selectedOrg.identifier
+        }
       }
       this.loaderService.setLoaderState(true)
       const createFrameworkData = await this.orgHieService.createMasterFrameWork(requestBody).toPromise().catch(_err => {
         this.loaderService.setLoaderState(false)
-        if (_err && _err.error && _err.error.params && _err.error.params.errMsg) {
-          this.snackbar.open(`${_err.error.params.errMsg}`)
+        if (_err && _err.params && _err.params.errMsg) {
+          this.snackbar.open(`${_err.params.errMsg}`)
           this.cancelHierarchyCreation()
         }
       })
-      if (createFrameworkData && createFrameworkData.result && createFrameworkData.result.framework) {
+      if (createFrameworkData && createFrameworkData.result && createFrameworkData.result.message) {
         this.cancelHierarchyCreation()
         setTimeout(() => {
           this.loaderService.setLoaderState(false)

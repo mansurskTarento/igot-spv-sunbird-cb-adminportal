@@ -47,7 +47,7 @@ export class OrgHierarchyService {
   }
 
   uploadFreameworkTemplate(request: any, frameworkId: any): Observable<any> {
-    return this.http.post<any>(`${API_END_POINTS.BULKUPLOAD_FRAMEWORK}${frameworkId.orgHierarchyFrameworkId}`, request)
+    return this.http.post<any>(`${API_END_POINTS.BULKUPLOAD_FRAMEWORK}${frameworkId.identifier}`, request)
   }
 
   getOrgReadData(request: any): Observable<any> {

@@ -30,6 +30,10 @@ export class OrgHierarchyMappingComponent implements OnInit, AfterViewInit {
   private destroy$ = new Subject<void>();
   bulkUploadRefresh: boolean = false
   showTreeView: boolean = false
+  /** true while lib-tree-view is reading /org/v2/hierarchy/read for the selected org */
+  frameWorkLoading: boolean = false
+  /** true when the hierarchy read for the selected org succeeded (the org has a hierarchy framework) */
+  frameWorkCreated: boolean = false
   orgSearchData: any
   orgReadData: any
   allOrganizations = [];
@@ -102,7 +106,11 @@ export class OrgHierarchyMappingComponent implements OnInit, AfterViewInit {
     }
 
     // Listen for organization selection changes to recreate tree view
-    this.organizationCtrl.valueChanges.subscribe(() => {
+    this.organizationCtrl.valueChanges.subscribe((value: any) => {
+      // lib-tree-view reads the hierarchy again for the new org and reports back through (frameWorkCreated)
+      this.frameWorkCreated = false
+      this.frameWorkLoading = !!value
+      this.loaderService.setLoaderState(this.frameWorkLoading)
       this.recreateTreeView()
     })
   }
@@ -164,7 +172,6 @@ export class OrgHierarchyMappingComponent implements OnInit, AfterViewInit {
           'orgName',
           'description',
           'parentOrgName',
-          'orgHierarchyFrameworkId',
           'orgHierarchyFrameworkStatus',
           'sbOrgType',
           'sbOrgSubType'
@@ -211,18 +218,15 @@ export class OrgHierarchyMappingComponent implements OnInit, AfterViewInit {
     return selectedOrg
   }
 
-  hasOrgHierarchyFrameworkId(): boolean {
-    if (!this.organizationCtrl?.value) {
-      return false
-    }
-    let selectedOrg: any
-    if (this.checkIfStateAdmin()) {
-      selectedOrg = this.orgReadData
-    } else {
-      selectedOrg = this.filteredOrganizations.find(org => org.identifier === this.organizationCtrl.value)
-    }
+  /** The selected org has a hierarchy framework (decided by the hierarchy read inside lib-tree-view) */
+  hasOrgaHierarchy(): boolean {
+    return !!this.organizationCtrl?.value && !this.frameWorkLoading && this.frameWorkCreated
+  }
 
-    return !!selectedOrg && !!selectedOrg.orgHierarchyFrameworkId
+  onFrameWorkCreated(created: boolean) {
+    this.frameWorkLoading = false
+    this.frameWorkCreated = created
+    this.loaderService.setLoaderState(false)
   }
 
   cancelHierarchyCreation() {
@@ -266,7 +270,8 @@ export class OrgHierarchyMappingComponent implements OnInit, AfterViewInit {
   }
 
   checkloader($event: boolean) {
-    this.loaderService.setLoaderState($event)
+    // lib-tree-view emits `false` as soon as it subscribes; keep the loader on until the hierarchy read finishes
+    this.loaderService.setLoaderState($event || this.frameWorkLoading)
   }
 
   async redirectOrg(event: any) {

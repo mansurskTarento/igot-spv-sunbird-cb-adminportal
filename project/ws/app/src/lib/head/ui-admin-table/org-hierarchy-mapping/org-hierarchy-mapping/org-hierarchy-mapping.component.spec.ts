@@ -253,24 +253,64 @@ describe('OrgHierarchyMappingComponent', () => {
     })
   })
 
-  describe('hasOrgHierarchyFrameworkId', () => {
+  describe('hasOrgaHierarchy', () => {
     it('should return false when no org selected', () => {
-      expect(component.hasOrgHierarchyFrameworkId()).toBe(false)
+      component.frameWorkCreated = true
+      expect(component.hasOrgaHierarchy()).toBe(false)
     })
 
-    it('should check framework id for SPV admin', () => {
-      component.filteredOrganizations = orgs
+    it('should return false while the hierarchy is loading', () => {
       component.organizationCtrl.setValue('o1')
-      expect(component.hasOrgHierarchyFrameworkId()).toBe(true)
-      component.organizationCtrl.setValue('o2')
-      expect(component.hasOrgHierarchyFrameworkId()).toBe(false)
+      component.frameWorkLoading = true
+      component.frameWorkCreated = true
+      expect(component.hasOrgaHierarchy()).toBe(false)
     })
 
-    it('should check framework id for state admin', () => {
-      createComponent(new Set(['state_admin']))
-      component.orgReadData = { orgHierarchyFrameworkId: 'fw' }
-      component.organizationCtrl.setValue('s1')
-      expect(component.hasOrgHierarchyFrameworkId()).toBe(true)
+    it('should follow frameWorkCreated once loading is done', () => {
+      component.organizationCtrl.setValue('o1')
+      component.onFrameWorkCreated(true)
+      expect(component.hasOrgaHierarchy()).toBe(true)
+      component.onFrameWorkCreated(false)
+      expect(component.hasOrgaHierarchy()).toBe(false)
+    })
+  })
+
+  describe('org selection change', () => {
+    beforeEach(() => {
+      jest.useFakeTimers()
+      component.ngOnInit()
+    })
+
+    it('should start loading and reset frameWorkCreated on every selection', () => {
+      component.frameWorkCreated = true
+      component.organizationCtrl.setValue('o1')
+      expect(component.frameWorkLoading).toBe(true)
+      expect(component.frameWorkCreated).toBe(false)
+      expect(loaderService.setLoaderState).toHaveBeenLastCalledWith(true)
+    })
+
+    it('should not be loading when the selection is cleared', () => {
+      component.organizationCtrl.setValue('o1')
+      component.organizationCtrl.reset()
+      expect(component.frameWorkLoading).toBe(false)
+      expect(component.frameWorkCreated).toBe(false)
+    })
+  })
+
+  describe('onFrameWorkCreated', () => {
+    it('should stop loading and store the received value', () => {
+      component.frameWorkLoading = true
+      component.onFrameWorkCreated(true)
+      expect(component.frameWorkLoading).toBe(false)
+      expect(component.frameWorkCreated).toBe(true)
+      expect(loaderService.setLoaderState).toHaveBeenLastCalledWith(false)
+    })
+
+    it('should mark framework as not created on failure', () => {
+      component.frameWorkLoading = true
+      component.onFrameWorkCreated(false)
+      expect(component.frameWorkLoading).toBe(false)
+      expect(component.frameWorkCreated).toBe(false)
     })
   })
 
@@ -352,6 +392,14 @@ describe('OrgHierarchyMappingComponent', () => {
   it('checkloader should set loader state', () => {
     component.checkloader(true)
     expect(loaderService.setLoaderState).toHaveBeenCalledWith(true)
+    component.checkloader(false)
+    expect(loaderService.setLoaderState).toHaveBeenLastCalledWith(false)
+  })
+
+  it('checkloader should keep the loader on while the hierarchy is loading', () => {
+    component.frameWorkLoading = true
+    component.checkloader(false)
+    expect(loaderService.setLoaderState).toHaveBeenLastCalledWith(true)
   })
 
   describe('redirectOrg', () => {

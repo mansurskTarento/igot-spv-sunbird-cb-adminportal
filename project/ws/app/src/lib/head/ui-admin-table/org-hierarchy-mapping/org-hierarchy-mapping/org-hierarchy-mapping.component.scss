@@ -1,3 +1,11 @@
+/* Keeps an element rendered (so its component runs) but invisible and taking no space */
+.hide-element {
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 .search-container {
   padding: 8px 16px;
   position: sticky;

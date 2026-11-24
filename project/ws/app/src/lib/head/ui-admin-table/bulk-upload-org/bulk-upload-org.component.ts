@@ -34,7 +34,7 @@ export class BulkUploadOrgComponent implements OnInit {
 
   async handleDownloadSampleFile() {
     const frameworkData: any = this.bulkUploadConfig.frameworkData || {}
-    if (frameworkData && frameworkData.orgHierarchyFrameworkId) {
+    if (frameworkData && frameworkData.identifier) {
       this.loaderService.setLoaderState(true)
       const fileData: any = await this.orgHieService.downloadSampleTemplate(frameworkData.identifier).toPromise().catch(_err => {
         this.loaderService.setLoaderState(false)
@@ -102,7 +102,7 @@ export class BulkUploadOrgComponent implements OnInit {
 
   getBulkuploadPrgressData() {
     this.loaderService.setLoaderState(true)
-    const orgId = this.bulkUploadConfig.frameworkData.orgHierarchyFrameworkId.split(`_`)[0]
+    const orgId = this.bulkUploadConfig.frameworkData.identifier
     this.orgHieService.getBulkuploadProgress((orgId) ? orgId : '').subscribe(
       (res: any) => {
         this.loaderService.setLoaderState(false)

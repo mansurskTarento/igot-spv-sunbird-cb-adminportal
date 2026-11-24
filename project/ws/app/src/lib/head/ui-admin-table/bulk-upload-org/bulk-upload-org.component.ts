@@ -5,10 +5,10 @@ import { GlobalEventsService } from '../../../../../../../../src/app/services/gl
 import { MatSnackBar } from '@angular/material/snack-bar'
 
 @Component({
-    selector: 'ws-app-bulk-upload-org',
-    templateUrl: './bulk-upload-org.component.html',
-    styleUrls: ['./bulk-upload-org.component.scss'],
-    standalone: false
+  selector: 'ws-app-bulk-upload-org',
+  templateUrl: './bulk-upload-org.component.html',
+  styleUrls: ['./bulk-upload-org.component.scss'],
+  standalone: false
 })
 export class BulkUploadOrgComponent implements OnInit {
 
@@ -36,7 +36,7 @@ export class BulkUploadOrgComponent implements OnInit {
     const frameworkData: any = this.bulkUploadConfig.frameworkData || {}
     if (frameworkData && frameworkData.orgHierarchyFrameworkId) {
       this.loaderService.setLoaderState(true)
-      const fileData: any = await this.orgHieService.downloadSampleTemplate(frameworkData.orgHierarchyFrameworkId).toPromise().catch(_err => {
+      const fileData: any = await this.orgHieService.downloadSampleTemplate(frameworkData.identifier).toPromise().catch(_err => {
         this.loaderService.setLoaderState(false)
         if (_err && _err.error && _err.error.params && _err.error.params.errMsg) {
           this.snackbar.open(`${_err.error.params.errMsg}`)

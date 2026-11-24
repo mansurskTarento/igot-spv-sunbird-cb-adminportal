@@ -308,9 +308,9 @@ export class OrgHierarchyMappingComponent implements OnInit, AfterViewInit {
 
   async downloadTemplate() {
     const frameworkData: any = this.getselectedOrgData()
-    if (frameworkData && frameworkData.orgHierarchyFrameworkId) {
+    if (frameworkData && frameworkData.identifier) {
       this.loaderService.setLoaderState(true)
-      const fileData: any = await this.orgHieService.downloadSampleTemplate(frameworkData.orgHierarchyFrameworkId).toPromise().catch(_err => {
+      const fileData: any = await this.orgHieService.downloadSampleTemplate(frameworkData.identifier).toPromise().catch(_err => {
         this.loaderService.setLoaderState(false)
         if (_err && _err.error && _err.error.params && _err.error.params.errMsg) {
           this.snackbar.open(`${_err.error.params.errMsg}`)
@@ -324,9 +324,9 @@ export class OrgHierarchyMappingComponent implements OnInit, AfterViewInit {
 
   async exportData() {
     const frameworkData: any = this.getselectedOrgData()
-    if (frameworkData && frameworkData.orgHierarchyFrameworkId) {
+    if (frameworkData && frameworkData.identifier) {
       this.loaderService.setLoaderState(true)
-      const fileData: any = await this.orgHieService.exportFramework(frameworkData.orgHierarchyFrameworkId).toPromise().catch(_err => {
+      const fileData: any = await this.orgHieService.exportFramework(frameworkData.identifier).toPromise().catch(_err => {
         this.loaderService.setLoaderState(false)
         if (_err && _err.error && _err.error.params && _err.error.params.errMsg) {
           this.snackbar.open(`${_err.error.params.errMsg}`)

@@ -6,9 +6,9 @@ const API_END_POINTS = {
   ORG_V1_Search: '/apis/proxies/v8/org/v1/search',
   CREATE_FRAMEWORK: '/apis/proxies/v8/org/v2/hierarchy/link',
   DOWNLOAD_FILE_LOG: '/apis/proxies/v8/organisation/v1/hierarchy/download/file/',
-  DOWNLOAD_FRAMEWORK_TEMPLATE: '/apis/proxies/v8/organisation/v1/hierarchy/download/',
+  DOWNLOAD_FRAMEWORK_TEMPLATE: (rootOrgId: string) => `/apis/proxies/v8/org/v2/hierarchy/bulk/link/${rootOrgId}/export`,
   BULKUPLOAD_FRAMEWORK: '/apis/proxies/v8/org/v2/hierarchy/bulk/link/',
-  DOWNLOAD_SAMPLE_TEMPLATE: '/apis/proxies/v8/organisation/v1/getMappingFile/sample/',
+  DOWNLOAD_SAMPLE_TEMPLATE: (rootOrgId: string) => `/apis/proxies/v8/org/v2/hierarchy/bulk/link/${rootOrgId}/sample`,
   ORG_READ: '/apis/proxies/v8/org/v1/read',
   BULKUPLOAD_PROGRESS: '/apis/proxies/v8/organisation/v1/hierarchy/progress/details/bulkUpload/',
   ACTIVATE_DEACTIVATE_VOLUNTEER: 'apis/proxies/v8/org/v1/status/update'
@@ -38,12 +38,12 @@ export class OrgHierarchyService {
     return this.http.get(`${API_END_POINTS.DOWNLOAD_FILE_LOG}${fileName}`)
   }
 
-  downloadSampleTemplate(orgType: string): Observable<any> {
-    return this.http.get(`${API_END_POINTS.DOWNLOAD_SAMPLE_TEMPLATE}${orgType}`)
+  downloadSampleTemplate(rootOrgId: string): Observable<any> {
+    return this.http.get(API_END_POINTS.DOWNLOAD_SAMPLE_TEMPLATE(rootOrgId))
   }
 
-  exportFramework(orgType: string): Observable<any> {
-    return this.http.get(`${API_END_POINTS.DOWNLOAD_FRAMEWORK_TEMPLATE}${orgType}`)
+  exportFramework(rootOrgId: string): Observable<any> {
+    return this.http.get(API_END_POINTS.DOWNLOAD_FRAMEWORK_TEMPLATE(rootOrgId))
   }
 
   uploadFreameworkTemplate(request: any, frameworkId: any): Observable<any> {
